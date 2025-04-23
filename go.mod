@@ -1,6 +1,8 @@
 module case-study-kredit-plus
 
-go 1.21.6
+go 1.23.0
+
+toolchain go1.23.8
 
 require (
 	github.com/GeertJohan/go.rice v1.0.3
@@ -90,6 +92,7 @@ require (
 	golang.org/x/net v0.25.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
+	golang.org/x/time v0.11.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

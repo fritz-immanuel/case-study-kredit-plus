@@ -121,7 +121,7 @@ func (h *UserHandler) Update(c *gin.Context) {
 
 	id := c.Param("id")
 
-	if !library.IsEmailValid(c.PostForm("Email")) {
+	if !library.ValidateEmail(c.PostForm("Email")) {
 		err := &types.Error{
 			Path:       ".UserHandler->Update()",
 			Message:    "Email is not valid",
@@ -133,9 +133,13 @@ func (h *UserHandler) Update(c *gin.Context) {
 		return
 	}
 
-	obj.Name = c.PostForm("Name")
+	if c.PostForm("Name") != "" && !library.ValidateTextInput(c.PostForm("Name")) {
+		obj.Name = c.PostForm("Name")
+	}
 	obj.Email = c.PostForm("Email")
-	obj.Username = c.PostForm("Username")
+	if c.PostForm("Username") != "" && !library.ValidateTextInput(c.PostForm("Username")) {
+		obj.Username = c.PostForm("Username")
+	}
 	obj.CountryCallingCode = c.PostForm("CountryCallingCode")
 	obj.PhoneNumber = c.PostForm("PhoneNumber")
 
@@ -231,7 +235,7 @@ func (h *UserHandler) Create(c *gin.Context) {
 
 	c.Set("UserID", "0")
 
-	if !library.IsEmailValid(c.PostForm("Email")) {
+	if !library.ValidateEmail(c.PostForm("Email")) {
 		err := &types.Error{
 			Path:       ".UserHandler->Create()",
 			Message:    "Email is not valid",
@@ -267,9 +271,13 @@ func (h *UserHandler) Create(c *gin.Context) {
 		return
 	}
 
-	obj.Name = c.PostForm("Name")
+	if c.PostForm("Name") != "" && !library.ValidateTextInput(c.PostForm("Name")) {
+		obj.Name = c.PostForm("Name")
+	}
 	obj.Email = c.PostForm("Email")
-	obj.Username = c.PostForm("Username")
+	if c.PostForm("Username") != "" && !library.ValidateTextInput(c.PostForm("Username")) {
+		obj.Username = c.PostForm("Username")
+	}
 	obj.CountryCallingCode = c.PostForm("CountryCallingCode")
 	obj.PhoneNumber = c.PostForm("PhoneNumber")
 
@@ -325,7 +333,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 	email := c.PostForm("Email")
 	password := fmt.Sprintf("%x", hash.Sum(nil))
 
-	if !library.IsEmailValid(c.PostForm("Email")) {
+	if !library.ValidateEmail(c.PostForm("Email")) {
 		err := &types.Error{
 			Path:       ".UserHandler->Login()",
 			Message:    "Email is not valid",

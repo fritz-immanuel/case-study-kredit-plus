@@ -36,6 +36,26 @@ func NewConsumerCreditLimitUsecase(db *sqlx.DB, consumercreditlimitRepo consumer
 }
 
 func (u *ConsumerCreditLimitUsecase) FindAll(ctx *gin.Context, params models.FindAllConsumerCreditLimitParams) ([]*models.ConsumerCreditLimit, *types.Error) {
+	validate := validator.New()
+	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
+
+	errValidation := validate.Struct(params)
+	if errValidation != nil {
+		return nil, &types.Error{
+			Path:       ".ConsumerCreditLimitUsecase->FindAll()",
+			Message:    errValidation.Error(),
+			Error:      errValidation,
+			StatusCode: http.StatusUnprocessableEntity,
+			Type:       "validation-error",
+		}
+	}
+
 	result, err := u.consumercreditlimitRepo.FindAll(ctx, params)
 	if err != nil {
 		err.Path = ".ConsumerCreditLimitUsecase->FindAll()" + err.Path
@@ -56,6 +76,26 @@ func (u *ConsumerCreditLimitUsecase) Find(ctx *gin.Context, id string) (*models.
 }
 
 func (u *ConsumerCreditLimitUsecase) Count(ctx *gin.Context, params models.FindAllConsumerCreditLimitParams) (int, *types.Error) {
+	validate := validator.New()
+	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
+
+	errValidation := validate.Struct(params)
+	if errValidation != nil {
+		return 0, &types.Error{
+			Path:       ".ConsumerCreditLimitUsecase->Count()",
+			Message:    errValidation.Error(),
+			Error:      errValidation,
+			StatusCode: http.StatusUnprocessableEntity,
+			Type:       "validation-error",
+		}
+	}
+
 	result, err := u.consumercreditlimitRepo.Count(ctx, params)
 	if err != nil {
 		err.Path = ".ConsumerCreditLimitUsecase->Count()" + err.Path

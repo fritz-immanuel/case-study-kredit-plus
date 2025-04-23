@@ -134,10 +134,18 @@ func (h *ConsumerHandler) FindAll(c *gin.Context) {
 		params.MaxSalary = maxSalary
 	}
 
-	params.NIK = c.Query("NIK")
-	params.FullName = c.Query("FullName")
-	params.LegalName = c.Query("LegalName")
-	params.PlaceOfBirth = c.Query("PlaceOfBirth")
+	if c.Query("NIK") != "" && !library.ValidateNIK(c.Query("NIK")) {
+		params.NIK = c.Query("NIK")
+	}
+	if c.Query("FullName") != "" && !library.ValidateTextInput(c.Query("FullName")) {
+		params.FullName = c.Query("FullName")
+	}
+	if c.Query("LegalName") != "" && !library.ValidateTextInput(c.Query("LegalName")) {
+		params.LegalName = c.Query("LegalName")
+	}
+	if c.Query("PlaceOfBirth") != "" && !library.ValidateTextInput(c.Query("PlaceOfBirth")) {
+		params.PlaceOfBirth = c.Query("PlaceOfBirth")
+	}
 
 	datas, err := h.ConsumerUsecase.FindAll(c, params)
 	if err != nil {
@@ -166,6 +174,18 @@ func (h *ConsumerHandler) FindAll(c *gin.Context) {
 func (h *ConsumerHandler) Find(c *gin.Context) {
 	id := c.Param("id")
 
+	if id != "" && !library.ValidateUUID(id) {
+		err := &types.Error{
+			Path:       ".ConsumerHandler->Find()",
+			Message:    "ID is not valid",
+			Error:      fmt.Errorf("ID is not valid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
+	}
+
 	result, err := h.ConsumerUsecase.Find(c, id)
 	if err != nil {
 		err.Path = ".ConsumerHandler->Find()" + err.Path
@@ -190,11 +210,47 @@ func (h *ConsumerHandler) Create(c *gin.Context) {
 	var obj models.Consumer
 	var data *models.Consumer
 
-	if !library.IsNIKValid(c.PostForm("NIK")) {
+	if !library.ValidateNIK(c.PostForm("NIK")) {
 		err := &types.Error{
 			Path:       ".ConsumerHandler->Create()",
 			Message:    "NIK is invalid",
 			Error:      fmt.Errorf("NIK is invalid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
+	}
+
+	if !library.ValidateTextInput(c.PostForm("FullName")) {
+		err := &types.Error{
+			Path:       ".ConsumerHandler->Create()",
+			Message:    "Full Name is invalid",
+			Error:      fmt.Errorf("FullName is invalid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
+	}
+
+	if !library.ValidateTextInput(c.PostForm("LegalName")) {
+		err := &types.Error{
+			Path:       ".ConsumerHandler->Create()",
+			Message:    "Legal Name is invalid",
+			Error:      fmt.Errorf("LegalName is invalid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
+	}
+
+	if !library.ValidateTextInput(c.PostForm("PlaceOfBirth")) {
+		err := &types.Error{
+			Path:       ".ConsumerHandler->Create()",
+			Message:    "Place Of Birth is invalid",
+			Error:      fmt.Errorf("PlaceOfBirth is invalid"),
 			Type:       "validation-error",
 			StatusCode: http.StatusUnprocessableEntity,
 		}
@@ -215,6 +271,7 @@ func (h *ConsumerHandler) Create(c *gin.Context) {
 			response.Error(c, err.Message, err.StatusCode, *err)
 			return
 		}
+
 		obj.DateOfBirth = dob
 	}
 
@@ -269,11 +326,59 @@ func (h *ConsumerHandler) Update(c *gin.Context) {
 
 	id := c.Param("id")
 
-	if !library.IsNIKValid(c.PostForm("NIK")) {
+	if id != "" && !library.ValidateUUID(id) {
+		err := &types.Error{
+			Path:       ".ConsumerHandler->Update()",
+			Message:    "ID is not valid",
+			Error:      fmt.Errorf("ID is not valid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
+	}
+
+	if !library.ValidateNIK(c.PostForm("NIK")) {
 		err := &types.Error{
 			Path:       ".ConsumerHandler->Update()",
 			Message:    "NIK is invalid",
 			Error:      fmt.Errorf("NIK is invalid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
+	}
+
+	if !library.ValidateTextInput(c.PostForm("FullName")) {
+		err := &types.Error{
+			Path:       ".ConsumerHandler->Update()",
+			Message:    "Full Name is invalid",
+			Error:      fmt.Errorf("FullName is invalid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
+	}
+
+	if !library.ValidateTextInput(c.PostForm("LegalName")) {
+		err := &types.Error{
+			Path:       ".ConsumerHandler->Update()",
+			Message:    "Legal Name is invalid",
+			Error:      fmt.Errorf("LegalName is invalid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
+	}
+
+	if !library.ValidateTextInput(c.PostForm("PlaceOfBirth")) {
+		err := &types.Error{
+			Path:       ".ConsumerHandler->Update()",
+			Message:    "Place Of Birth is invalid",
+			Error:      fmt.Errorf("PlaceOfBirth is invalid"),
 			Type:       "validation-error",
 			StatusCode: http.StatusUnprocessableEntity,
 		}
@@ -294,6 +399,7 @@ func (h *ConsumerHandler) Update(c *gin.Context) {
 			response.Error(c, err.Message, err.StatusCode, *err)
 			return
 		}
+
 		obj.DateOfBirth = dob
 	}
 
@@ -311,7 +417,6 @@ func (h *ConsumerHandler) Update(c *gin.Context) {
 	}
 
 	obj.Salary = salary
-
 	obj.NIK = c.PostForm("NIK")
 	obj.FullName = c.PostForm("FullName")
 	obj.LegalName = c.PostForm("LegalName")

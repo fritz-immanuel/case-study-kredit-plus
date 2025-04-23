@@ -55,12 +55,12 @@ func (h ConsumerTransactionHandler) RegisterAPI(db *sqlx.DB, dataManager *data.M
 
 	rs := v.Group("/consumers/transactions")
 	{
-		rs.GET("", middleware.AuthExternal, base.FindAll)
-		rs.GET("/:id", middleware.AuthExternal, base.Find)
-		rs.POST("", middleware.AuthExternal, base.Create)
-		// rs.PUT("/:id", middleware.AuthExternal, base.Update)
+		rs.GET("", middleware.Auth, base.FindAll)
+		rs.GET("/:id", middleware.Auth, base.Find)
+		rs.POST("", middleware.Auth, base.Create)
+		rs.PUT("/:id", middleware.Auth, base.Update)
 
-		// rs.PUT("/status", middleware.AuthExternal, base.UpdateStatus)
+		rs.PUT("/status", middleware.Auth, base.UpdateStatus)
 	}
 
 	status := v.Group("/statuses")
@@ -199,9 +199,6 @@ func (h *ConsumerTransactionHandler) Create(c *gin.Context) {
 		response.Error(c, err.Message, err.StatusCode, *err)
 		return
 	}
-
-	c.Set("UserID", c.PostForm("ConsumerID"))
-	// c.Set("UserName", "")
 
 	otr, errParseFloat := strconv.ParseFloat(c.PostForm("OTR"), 64)
 	if errParseFloat != nil {

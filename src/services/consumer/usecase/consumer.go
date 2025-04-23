@@ -37,6 +37,26 @@ func NewConsumerUsecase(db *sqlx.DB, consumerRepo consumer.Repository) consumer.
 }
 
 func (u *ConsumerUsecase) FindAll(ctx *gin.Context, params models.FindAllConsumerParams) ([]*models.Consumer, *types.Error) {
+	validate := validator.New()
+	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
+
+	errValidation := validate.Struct(params)
+	if errValidation != nil {
+		return nil, &types.Error{
+			Path:       ".ConsumerUsecase->FindAll()",
+			Message:    errValidation.Error(),
+			Error:      errValidation,
+			StatusCode: http.StatusUnprocessableEntity,
+			Type:       "validation-error",
+		}
+	}
+
 	result, err := u.consumerRepo.FindAll(ctx, params)
 	if err != nil {
 		err.Path = ".ConsumerUsecase->FindAll()" + err.Path
@@ -57,6 +77,26 @@ func (u *ConsumerUsecase) Find(ctx *gin.Context, id string) (*models.Consumer, *
 }
 
 func (u *ConsumerUsecase) Count(ctx *gin.Context, params models.FindAllConsumerParams) (int, *types.Error) {
+	validate := validator.New()
+	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
+
+	errValidation := validate.Struct(params)
+	if errValidation != nil {
+		return 0, &types.Error{
+			Path:       ".ConsumerUsecase->Count()",
+			Message:    errValidation.Error(),
+			Error:      errValidation,
+			StatusCode: http.StatusUnprocessableEntity,
+			Type:       "validation-error",
+		}
+	}
+	
 	result, err := u.consumerRepo.Count(ctx, params)
 	if err != nil {
 		err.Path = ".ConsumerUsecase->Count()" + err.Path

@@ -3,6 +3,7 @@ package businessweb
 import (
 	http_consumer "case-study-kredit-plus/src/app/businessweb/consumer"
 	http_consumercreditlimit "case-study-kredit-plus/src/app/businessweb/consumercreditlimit"
+	http_consumertransaction "case-study-kredit-plus/src/app/businessweb/consumertransaction"
 	http_user "case-study-kredit-plus/src/app/businessweb/user"
 
 	"case-study-kredit-plus/library/data"
@@ -14,6 +15,7 @@ import (
 var (
 	consumerHandler            http_consumer.ConsumerHandler
 	consumercreditlimitHandler http_consumercreditlimit.ConsumerCreditLimitHandler
+	consumertransactionHandler http_consumertransaction.ConsumerTransactionHandler
 	userHandler                http_user.UserHandler
 )
 
@@ -22,6 +24,7 @@ func RegisterRoutes(db *sqlx.DB, dataManager *data.Manager, router *gin.Engine, 
 	{
 		consumerHandler.RegisterAPI(db, dataManager, router, v1)
 		consumercreditlimitHandler.RegisterAPI(db, dataManager, router, v1)
+		consumertransactionHandler.RegisterAPI(db, dataManager, router, v1)
 		userHandler.RegisterAPI(db, dataManager, router, v1)
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"case-study-kredit-plus/configs"
+	"case-study-kredit-plus/library"
 	"case-study-kredit-plus/library/data"
 
 	"github.com/gin-contrib/cors"
@@ -27,6 +28,8 @@ func RegisterRoutes(db *sqlx.DB, config *configs.Config, dataManager *data.Manag
 		},
 		MaxAge: 12 * time.Hour, //change to config
 	}))
+
+	router.Use(library.RateLimitMiddleware())
 
 	RegisterWebRoutes(db, dataManager, router)
 	RegisterExternalRoutes(db, dataManager, router)

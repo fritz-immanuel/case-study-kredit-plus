@@ -41,6 +41,26 @@ func NewConsumerTransactionUsecase(db *sqlx.DB, consumertransactionRepo consumer
 }
 
 func (u *ConsumerTransactionUsecase) FindAll(ctx *gin.Context, params models.FindAllConsumerTransactionParams) ([]*models.ConsumerTransaction, *types.Error) {
+	validate := validator.New()
+	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
+
+	errValidation := validate.Struct(params)
+	if errValidation != nil {
+		return nil, &types.Error{
+			Path:       ".ConsumerTransactionUsecase->FindAll()",
+			Message:    errValidation.Error(),
+			Error:      errValidation,
+			StatusCode: http.StatusUnprocessableEntity,
+			Type:       "validation-error",
+		}
+	}
+
 	result, err := u.consumertransactionRepo.FindAll(ctx, params)
 	if err != nil {
 		err.Path = ".ConsumerTransactionUsecase->FindAll()" + err.Path
@@ -61,6 +81,26 @@ func (u *ConsumerTransactionUsecase) Find(ctx *gin.Context, id string) (*models.
 }
 
 func (u *ConsumerTransactionUsecase) Count(ctx *gin.Context, params models.FindAllConsumerTransactionParams) (int, *types.Error) {
+	validate := validator.New()
+	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
+
+	errValidation := validate.Struct(params)
+	if errValidation != nil {
+		return 0, &types.Error{
+			Path:       ".ConsumerTransactionUsecase->Count()",
+			Message:    errValidation.Error(),
+			Error:      errValidation,
+			StatusCode: http.StatusUnprocessableEntity,
+			Type:       "validation-error",
+		}
+	}
+
 	result, err := u.consumertransactionRepo.Count(ctx, params)
 	if err != nil {
 		err.Path = ".ConsumerTransactionUsecase->Count()" + err.Path
@@ -91,7 +131,7 @@ func (u *ConsumerTransactionUsecase) Create(ctx *gin.Context, obj models.Consume
 		}
 	}
 
-	if !library.IsValidTenor(obj.LoanTerm) {
+	if !library.ValidateTenor(obj.LoanTerm) {
 		return nil, &types.Error{
 			Path:       ".ConsumerTransactionUsecase->Create()",
 			Message:    "Loan Term Invalid",
@@ -172,7 +212,7 @@ func (u *ConsumerTransactionUsecase) Update(ctx *gin.Context, id string, obj mod
 		}
 	}
 
-	if !library.IsValidTenor(obj.LoanTerm) {
+	if !library.ValidateTenor(obj.LoanTerm) {
 		return nil, &types.Error{
 			Path:       ".ConsumerTransactionUsecase->Update()",
 			Message:    "Loan Term Invalid",
@@ -198,6 +238,23 @@ func (u *ConsumerTransactionUsecase) Update(ctx *gin.Context, id string, obj mod
 		installmentAmount = totalAmount / float64(obj.LoanTerm)
 	}
 
+	// check tenor limit availability
+	remainingLimit, err := u.consumercreditlimitUsecase.CheckCreditLimitAvailability(ctx, obj.ConsumerID, obj.LoanTerm)
+	if err != nil {
+		err.Path = ".ConsumerTransactionUsecase->Update()" + err.Path
+		return nil, err
+	}
+
+	if remainingLimit+data.TotalAmount < totalAmount {
+		return nil, &types.Error{
+			Path:       ".ConsumerTransactionUsecase->Update()",
+			Message:    "Insufficient Credit Limit",
+			Error:      fmt.Errorf("Insufficient Credit Limit"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+	}
+
 	// data.ConsumerID = obj.ConsumerID
 	// data.ContractNumber = obj.ContractNumber
 	data.OTR = obj.OTR
@@ -207,23 +264,6 @@ func (u *ConsumerTransactionUsecase) Update(ctx *gin.Context, id string, obj mod
 	data.InterestAmount = obj.InterestAmount
 	data.TotalAmount = totalAmount
 	data.AssetName = obj.AssetName
-
-	// check tenor limit availability
-	remainingLimit, err := u.consumercreditlimitUsecase.CheckCreditLimitAvailability(ctx, obj.ConsumerID, obj.LoanTerm)
-	if err != nil {
-		err.Path = ".ConsumerTransactionUsecase->Update()" + err.Path
-		return nil, err
-	}
-
-	if remainingLimit < totalAmount {
-		return nil, &types.Error{
-			Path:       ".ConsumerTransactionUsecase->Update()",
-			Message:    "Insufficient Credit Limit",
-			Error:      fmt.Errorf("Insufficient Credit Limit"),
-			Type:       "validation-error",
-			StatusCode: http.StatusUnprocessableEntity,
-		}
-	}
 
 	result, err := u.consumertransactionRepo.Update(ctx, data)
 	if err != nil {

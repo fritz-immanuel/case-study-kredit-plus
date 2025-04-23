@@ -2,11 +2,13 @@ package consumercreditlimit
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/jmoiron/sqlx"
 
+	"case-study-kredit-plus/library"
 	"case-study-kredit-plus/library/helpers"
 	"case-study-kredit-plus/middleware"
 	"case-study-kredit-plus/models"
@@ -58,6 +60,18 @@ func (h ConsumerCreditLimitHandler) RegisterAPI(db *sqlx.DB, dataManager *data.M
 }
 
 func (h *ConsumerCreditLimitHandler) FindAll(c *gin.Context) {
+	if c.Query("ConsumerID") != "" && !library.ValidateUUID(c.Query("ConsumerID")) {
+		err := &types.Error{
+			Path:       ".ConsumerCreditLimitHandler->FindAll()",
+			Message:    "Consumer ID is not valid",
+			Error:      fmt.Errorf("Consumer ID is not valid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
+	}
+
 	var params models.FindAllConsumerCreditLimitParams
 	page, size := helpers.FilterFindAll(c)
 	filterFindAllParams := helpers.FilterFindAllParam(c)
@@ -90,6 +104,18 @@ func (h *ConsumerCreditLimitHandler) FindAll(c *gin.Context) {
 func (h *ConsumerCreditLimitHandler) Find(c *gin.Context) {
 	id := c.Param("id")
 
+	if id != "" && !library.ValidateUUID(id) {
+		err := &types.Error{
+			Path:       ".ConsumerCreditLimitHandler->Find()",
+			Message:    "ID is not valid",
+			Error:      fmt.Errorf("ID is not valid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
+	}
+
 	result, err := h.ConsumerCreditLimitUsecase.Find(c, id)
 	if err != nil {
 		err.Path = ".ConsumerCreditLimitHandler->Find()" + err.Path
@@ -113,6 +139,18 @@ func (h *ConsumerCreditLimitHandler) Create(c *gin.Context) {
 	var err *types.Error
 	var obj models.ConsumerCreditLimit
 	var data *models.ConsumerCreditLimit
+
+	if c.PostForm("ConsumerID") != "" && !library.ValidateUUID(c.PostForm("ConsumerID")) {
+		err := &types.Error{
+			Path:       ".ConsumerCreditLimitHandler->Create()",
+			Message:    "Consumer ID is not valid",
+			Error:      fmt.Errorf("Consumer ID is not valid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
+	}
 
 	month1, errParseFloat := strconv.ParseFloat(c.PostForm("Month1"), 64)
 	if errParseFloat != nil {
@@ -200,6 +238,30 @@ func (h *ConsumerCreditLimitHandler) Update(c *gin.Context) {
 	var data *models.ConsumerCreditLimit
 
 	id := c.Param("id")
+
+	if id != "" && !library.ValidateUUID(id) {
+		err := &types.Error{
+			Path:       ".ConsumerHandler->Update()",
+			Message:    "ID is not valid",
+			Error:      fmt.Errorf("ID is not valid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
+	}
+
+	if c.PostForm("ConsumerID") != "" && !library.ValidateUUID(c.PostForm("ConsumerID")) {
+		err := &types.Error{
+			Path:       ".ConsumerCreditLimitHandler->Update()",
+			Message:    "Consumer ID is not valid",
+			Error:      fmt.Errorf("Consumer ID is not valid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
+	}
 
 	month1, errParseFloat := strconv.ParseFloat(c.PostForm("Month1"), 64)
 	if errParseFloat != nil {
