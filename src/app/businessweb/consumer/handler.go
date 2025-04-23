@@ -135,17 +135,54 @@ func (h *ConsumerHandler) FindAll(c *gin.Context) {
 	}
 
 	if c.Query("NIK") != "" && !library.ValidateNIK(c.Query("NIK")) {
-		params.NIK = c.Query("NIK")
+		err := &types.Error{
+			Path:       ".ConsumerCreditLimitHandler->Create()",
+			Message:    "NIK is not valid",
+			Error:      fmt.Errorf("NIK is not valid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
 	}
 	if c.Query("FullName") != "" && !library.ValidateTextInput(c.Query("FullName")) {
-		params.FullName = c.Query("FullName")
+		err := &types.Error{
+			Path:       ".ConsumerCreditLimitHandler->Create()",
+			Message:    "Full Name is not valid.",
+			Error:      fmt.Errorf("Full Name is not valid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
 	}
 	if c.Query("LegalName") != "" && !library.ValidateTextInput(c.Query("LegalName")) {
-		params.LegalName = c.Query("LegalName")
+		err := &types.Error{
+			Path:       ".ConsumerCreditLimitHandler->Create()",
+			Message:    "Legal Name is not valid.",
+			Error:      fmt.Errorf("Legal Name is not valid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
 	}
 	if c.Query("PlaceOfBirth") != "" && !library.ValidateTextInput(c.Query("PlaceOfBirth")) {
-		params.PlaceOfBirth = c.Query("PlaceOfBirth")
+		err := &types.Error{
+			Path:       ".ConsumerCreditLimitHandler->Create()",
+			Message:    "Place of Birth is not valid.",
+			Error:      fmt.Errorf("Place of Birth is not valid"),
+			Type:       "validation-error",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+		response.Error(c, err.Message, err.StatusCode, *err)
+		return
 	}
+
+	params.NIK = c.Query("NIK")
+	params.FullName = c.Query("FullName")
+	params.LegalName = c.Query("LegalName")
+	params.PlaceOfBirth = c.Query("PlaceOfBirth")
 
 	datas, err := h.ConsumerUsecase.FindAll(c, params)
 	if err != nil {
@@ -399,6 +436,8 @@ func (h *ConsumerHandler) Update(c *gin.Context) {
 			response.Error(c, err.Message, err.StatusCode, *err)
 			return
 		}
+
+		fmt.Println(">>>", dob)
 
 		obj.DateOfBirth = dob
 	}

@@ -50,7 +50,7 @@ func (h ConsumerCreditLimitHandler) RegisterAPI(db *sqlx.DB, dataManager *data.M
 		rs.POST("", middleware.Auth, base.Create)
 		// rs.PUT("/:id", middleware.Auth, base.Update)
 
-		rs.PUT("/status", middleware.Auth, base.UpdateStatus)
+		// rs.PUT("/status", middleware.Auth, base.UpdateStatus)
 	}
 
 	status := v.Group("/statuses")

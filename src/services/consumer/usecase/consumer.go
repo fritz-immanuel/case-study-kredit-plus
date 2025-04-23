@@ -230,8 +230,8 @@ func (u *ConsumerUsecase) Update(ctx *gin.Context, id string, obj models.Consume
 	data.PlaceOfBirth = obj.PlaceOfBirth
 	data.DateOfBirth = obj.DateOfBirth
 	data.Salary = obj.Salary
-	// data.KTPImgURL = obj.KTPImgURL
-	// data.SelfieImgURL = obj.SelfieImgURL
+	data.KTPImgURL = obj.KTPImgURL
+	data.SelfieImgURL = obj.SelfieImgURL
 
 	result, err := u.consumerRepo.Update(ctx, data)
 	if err != nil {

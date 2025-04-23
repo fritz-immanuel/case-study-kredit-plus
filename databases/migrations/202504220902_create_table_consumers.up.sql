@@ -4,7 +4,7 @@ CREATE TABLE consumers (
   full_name VARCHAR(255) NOT NULL,
   legal_name VARCHAR(255) NOT NULL,
   place_of_birth VARCHAR(255) NOT NULL,
-  date_of_birth TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  date_of_birth DATE NOT NULL,
   salary DECIMAL(12,2) UNSIGNED NOT NULL,
   ktp_img_url VARCHAR(255) NOT NULL,
   selfie_img_url VARCHAR(255) NOT NULL,

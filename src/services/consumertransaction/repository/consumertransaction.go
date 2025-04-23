@@ -41,11 +41,11 @@ func (s ConsumerTransactionRepository) FindAll(ctx *gin.Context, params models.F
 	}
 
 	if params.ContractNumber != "" {
-		where += fmt.Sprintf(` AND consumers.contract_number LIKE "%%%s%%"`, params.ContractNumber)
+		where += fmt.Sprintf(` AND consumer_transactions.contract_number LIKE "%%%s%%"`, params.ContractNumber)
 	}
 
 	if params.LoanTerm != 0 {
-		where += fmt.Sprintf(` AND consumers.contract_number = %d`, params.LoanTerm)
+		where += fmt.Sprintf(` AND consumer_transactions.loan_term = %d`, params.LoanTerm)
 	}
 
 	if params.FindAllParams.SortBy != "" {
@@ -193,12 +193,16 @@ func (s ConsumerTransactionRepository) Count(ctx *gin.Context, params models.Fin
 		where += fmt.Sprintf(` AND consumer_transactions.%s`, params.FindAllParams.StatusID)
 	}
 
-	if params.ContractNumber != "" {
-		where += fmt.Sprintf(` AND consumers.contract_number LIKE "%%%s%%"`, params.ContractNumber)
-	}
-
 	if params.ConsumerID != "" {
 		where += ` AND consumer_transactions.consumer_id = :consumer_id`
+	}
+
+	if params.ContractNumber != "" {
+		where += fmt.Sprintf(` AND consumer_transactions.contract_number LIKE "%%%s%%"`, params.ContractNumber)
+	}
+
+	if params.LoanTerm != 0 {
+		where += fmt.Sprintf(` AND consumer_transactions.loan_term = %d`, params.LoanTerm)
 	}
 
 	query := fmt.Sprintf(`

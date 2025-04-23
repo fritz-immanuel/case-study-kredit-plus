@@ -1,7 +1,6 @@
 package library
 
 import (
-	"fmt"
 	"regexp"
 
 	"github.com/google/uuid"
@@ -38,12 +37,11 @@ func ValidatePhoneNumber(phone string) bool {
 }
 
 func ValidateTextInput(input string) bool {
-	inputRegex := regexp.MustCompile(`^[a-zA-Z0-9\s\-\',.&()]{3,100}$`)
+	inputRegex := regexp.MustCompile(`^[a-zA-Z0-9\s\-\',.&()]{1,250}$`)
 	return inputRegex.MatchString(input)
 }
 
 func ValidateUUID(input string) bool {
 	_, err := uuid.Parse(input)
-	fmt.Println(err == nil)
 	return err == nil
 }

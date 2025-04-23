@@ -24,9 +24,9 @@ func init() {
 	}
 	file4 := &embedded.EmbeddedFile{
 		Filename:    "202504220902_create_table_consumers.up.sql",
-		FileModTime: time.Unix(1745292921, 0),
+		FileModTime: time.Unix(1745408715, 0),
 
-		Content: string("CREATE TABLE consumers (\r\n  id VARCHAR(255) PRIMARY KEY NOT NULL,\r\n  NIK VARCHAR(20) NOT NULL,\r\n  full_name VARCHAR(255) NOT NULL,\r\n  legal_name VARCHAR(255) NOT NULL,\r\n  place_of_birth VARCHAR(255) NOT NULL,\r\n  date_of_birth TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\r\n  salary DECIMAL(12,2) UNSIGNED NOT NULL,\r\n  ktp_img_url VARCHAR(255) NOT NULL,\r\n  selfie_img_url VARCHAR(255) NOT NULL,\r\n\r\n  status_id VARCHAR(255) DEFAULT \"1\",\r\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\r\n  created_by VARCHAR(255) NULL,\r\n  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\r\n  updated_by VARCHAR(255) NULL,\r\n  INDEX index_NIK (NIK),\r\n  INDEX index_full_name (full_name),\r\n  INDEX index_legal_name (legal_name),\r\n  INDEX index_place_of_birth (place_of_birth),\r\n  INDEX index_date_of_birth (date_of_birth)\r\n);"),
+		Content: string("CREATE TABLE consumers (\r\n  id VARCHAR(255) PRIMARY KEY NOT NULL,\r\n  NIK VARCHAR(20) NOT NULL,\r\n  full_name VARCHAR(255) NOT NULL,\r\n  legal_name VARCHAR(255) NOT NULL,\r\n  place_of_birth VARCHAR(255) NOT NULL,\r\n  date_of_birth DATE NOT NULL,\r\n  salary DECIMAL(12,2) UNSIGNED NOT NULL,\r\n  ktp_img_url VARCHAR(255) NOT NULL,\r\n  selfie_img_url VARCHAR(255) NOT NULL,\r\n\r\n  status_id VARCHAR(255) DEFAULT \"1\",\r\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\r\n  created_by VARCHAR(255) NULL,\r\n  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\r\n  updated_by VARCHAR(255) NULL,\r\n  INDEX index_NIK (NIK),\r\n  INDEX index_full_name (full_name),\r\n  INDEX index_legal_name (legal_name),\r\n  INDEX index_place_of_birth (place_of_birth),\r\n  INDEX index_date_of_birth (date_of_birth)\r\n);"),
 	}
 	file5 := &embedded.EmbeddedFile{
 		Filename:    "202504220903_create_table_users.up.sql",
