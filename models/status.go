@@ -2,7 +2,7 @@ package models
 
 var (
 	STATUS_ACTIVE   = "1"
-	STATUS_INACTIVE = "1"
+	STATUS_INACTIVE = "0"
 
 	DEFAULT_STATUS_ID = STATUS_ACTIVE
 )

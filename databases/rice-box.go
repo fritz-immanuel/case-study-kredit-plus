@@ -35,22 +35,43 @@ func init() {
 		Content: string("CREATE TABLE users (\r\n  id VARCHAR(255) PRIMARY KEY NOT NULL,\r\n  name VARCHAR(255) NOT NULL,\r\n  email VARCHAR(255) NOT NULL,\r\n  username VARCHAR(255) NOT NULL,\r\n  country_calling_code VARCHAR(255) NOT NULL,\r\n  phone_number VARCHAR(255) NOT NULL,\r\n  password VARCHAR(255) NOT NULL,\r\n\r\n  status_id VARCHAR(255) DEFAULT \"1\",\r\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\r\n  created_by VARCHAR(255) NULL,\r\n  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\r\n  updated_by VARCHAR(255) NULL,\r\n  INDEX index_username (username)\r\n);"),
 	}
 	file6 := &embedded.EmbeddedFile{
-		Filename:    "202504221904_create_table_user_actions.up.sql",
+		Filename:    "202504220904_create_table_user_actions.up.sql",
 		FileModTime: time.Unix(1730954671, 0),
 
 		Content: string("CREATE TABLE user_actions (\r\n  id VARCHAR(255) NOT NULL,\r\n  user_id VARCHAR(255) DEFAULT '',\r\n  table_name VARCHAR(200) DEFAULT NULL,\r\n  action VARCHAR(100) DEFAULT NULL,\r\n  action_value INT DEFAULT 0,\r\n  ref_id VARCHAR(255) DEFAULT '0',\r\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\r\n  PRIMARY KEY (id),\r\n  INDEX idx_user_id (user_id),\r\n  INDEX idx_ref_id (ref_id),\r\n  INDEX idx_table_name (table_name)\r\n);"),
+	}
+	file7 := &embedded.EmbeddedFile{
+		Filename:    "202504220905_create_table_consumer_credit_limits_.up.sql",
+		FileModTime: time.Unix(1745317549, 0),
+
+		Content: string("CREATE TABLE consumer_credit_limits (\r\n  id VARCHAR(255) PRIMARY KEY NOT NULL,\r\n  consumer_id VARCHAR(255) NOT NULL,\r\n  1_month DECIMAL(12,2) UNSIGNED NOT NULL,\r\n  2_month DECIMAL(12,2) UNSIGNED NOT NULL,\r\n  3_month DECIMAL(12,2) UNSIGNED NOT NULL,\r\n  6_month DECIMAL(12,2) UNSIGNED NOT NULL,\r\n\r\n  status_id VARCHAR(255) DEFAULT \"1\",\r\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\r\n  created_by VARCHAR(255) NULL,\r\n  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\r\n  updated_by VARCHAR(255) NULL,\r\n  INDEX index_consumer_id (consumer_id)\r\n);"),
+	}
+	file8 := &embedded.EmbeddedFile{
+		Filename:    "202504220906_create_table_consumer_transactions.up.sql",
+		FileModTime: time.Unix(1745331938, 0),
+
+		Content: string("CREATE TABLE consumer_transactions (\r\n  id VARCHAR(255) PRIMARY KEY NOT NULL,\r\n  consumer_id VARCHAR(255) NOT NULL,\r\n  contract_number VARCHAR(255) NOT NULL,\r\n  OTR DECIMAL(12,2) UNSIGNED NOT NULL,\r\n  admin_fee DECIMAL(12,2) UNSIGNED NOT NULL,\r\n  installment_amount DECIMAL(12,2) UNSIGNED NOT NULL,\r\n  loan_term INT UNSIGNED NOT NULL,\r\n  interest_amount DECIMAL(12,2) UNSIGNED NOT NULL,\r\n  total_amount DECIMAL(12,2) UNSIGNED NOT NULL,\r\n  asset_name VARCHAR(255) NOT NULL,\r\n\r\n  status_id VARCHAR(255) DEFAULT \"1\",\r\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\r\n  created_by VARCHAR(255) NULL,\r\n  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\r\n  updated_by VARCHAR(255) NULL,\r\n  INDEX index_consumer_id (consumer_id),\r\n  INDEX index_contract_number (contract_number)\r\n);"),
+	}
+	file9 := &embedded.EmbeddedFile{
+		Filename:    "202504220907_create_table_api_client.up.sql",
+		FileModTime: time.Unix(1745333978, 0),
+
+		Content: string("CREATE TABLE api_client (\r\n  id INT NOT NULL AUTO_INCREMENT,\r\n  name  VARCHAR(255) DEFAULT \"\",\r\n  token  VARCHAR(255) DEFAULT \"\",\r\n  PRIMARY KEY (id)\r\n);"),
 	}
 
 	// define dirs
 	dir1 := &embedded.EmbeddedDir{
 		Filename:   "",
-		DirModTime: time.Unix(1745303821, 0),
+		DirModTime: time.Unix(1745333977, 0),
 		ChildFiles: []*embedded.EmbeddedFile{
 			file2, // "202504220900_create_table_status.up.sql"
 			file3, // "202504220901_insert_status_data.up.sql"
 			file4, // "202504220902_create_table_consumers.up.sql"
 			file5, // "202504220903_create_table_users.up.sql"
-			file6, // "202504221904_create_table_user_actions.up.sql"
+			file6, // "202504220904_create_table_user_actions.up.sql"
+			file7, // "202504220905_create_table_consumer_credit_limits_.up.sql"
+			file8, // "202504220906_create_table_consumer_transactions.up.sql"
+			file9, // "202504220907_create_table_api_client.up.sql"
 
 		},
 	}
@@ -61,16 +82,19 @@ func init() {
 	// register embeddedBox
 	embedded.RegisterEmbeddedBox(`./migrations`, &embedded.EmbeddedBox{
 		Name: `./migrations`,
-		Time: time.Unix(1745303821, 0),
+		Time: time.Unix(1745333977, 0),
 		Dirs: map[string]*embedded.EmbeddedDir{
 			"": dir1,
 		},
 		Files: map[string]*embedded.EmbeddedFile{
-			"202504220900_create_table_status.up.sql":       file2,
-			"202504220901_insert_status_data.up.sql":        file3,
-			"202504220902_create_table_consumers.up.sql":    file4,
-			"202504220903_create_table_users.up.sql":        file5,
-			"202504221904_create_table_user_actions.up.sql": file6,
+			"202504220900_create_table_status.up.sql":                  file2,
+			"202504220901_insert_status_data.up.sql":                   file3,
+			"202504220902_create_table_consumers.up.sql":               file4,
+			"202504220903_create_table_users.up.sql":                   file5,
+			"202504220904_create_table_user_actions.up.sql":            file6,
+			"202504220905_create_table_consumer_credit_limits_.up.sql": file7,
+			"202504220906_create_table_consumer_transactions.up.sql":   file8,
+			"202504220907_create_table_api_client.up.sql":              file9,
 		},
 	})
 }

@@ -15,6 +15,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/jmoiron/sqlx"
 )
 
 func Auth(c *gin.Context) {
@@ -207,6 +208,62 @@ func AuthMobile(c *gin.Context) {
 	}
 }
 
+func AuthExternal(c *gin.Context) {
+	CheckSecretTokenWebApp(c)
+
+	config, err := configs.GetConfiguration()
+	if err != nil {
+		log.Fatalln("failed to get configuration: ", err)
+	}
+
+	// CheckIPClientIP(c, config)
+
+	var token string
+	tokenString := c.Request.Header.Get("Authorization")
+	_, err = fmt.Sscanf(tokenString, "Bearer %s", &token)
+	if err != nil {
+		response := types.Result{Status: "Warning", StatusCode: http.StatusUnauthorized, Message: "Token Format Wrong"}
+		result := gin.H{
+			"result": response,
+		}
+		c.JSON(http.StatusUnauthorized, result)
+		c.Abort()
+		return
+	}
+
+	db, err := sqlx.Open("mysql", config.DBConnectionString)
+	if err != nil {
+		log.Fatalln("failed to open database x: ", err)
+	}
+	defer db.Close()
+
+	rows, err := db.Query(`
+	SELECT
+		api_client.id, api_client.name
+	FROM api_client
+	WHERE api_client.token = ? and name = 'Account'
+	`, token)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	hasAccess := false
+	if rows.Next() {
+		hasAccess = true
+	}
+
+	if !hasAccess {
+		response := types.Result{Status: "Warning", StatusCode: http.StatusUnauthorized, Message: "Token Not Found"}
+		result := gin.H{
+			"result": response,
+		}
+		c.JSON(http.StatusUnauthorized, result)
+		c.Abort()
+		return
+	}
+}
+
 func AuthCheckIP(c *gin.Context) {
 	config, err := configs.GetConfiguration()
 	if err != nil {
@@ -304,6 +361,68 @@ func CheckApplicationVersionPOS(c *gin.Context) {
 		} else if requestVer > minimumVer {
 			break
 		}
+	}
+}
+
+func CheckSecretTokenWebApp(c *gin.Context) {
+	config, err := configs.GetConfiguration()
+	if err != nil {
+		log.Fatalln("failed to get configuration: ", err)
+	}
+	if err != nil {
+		response := types.Result{Status: "Warning", StatusCode: http.StatusUnauthorized, Message: "failed to get configuration"}
+		result := gin.H{
+			"result": response,
+		}
+		c.JSON(http.StatusUnauthorized, result)
+		c.Abort()
+		return
+	}
+
+	// CHECK SECRET TOKEN
+	var secretToken string
+	secretTokenString := c.Request.Header.Get("Access-Token")
+	_, err = fmt.Sscanf(secretTokenString, "Bearer %s", &secretToken)
+	if err != nil {
+		response := types.Result{Status: "Warning", StatusCode: http.StatusUnauthorized, Message: "Access Token Format Wrong"}
+		result := gin.H{
+			"result": response,
+		}
+		c.JSON(http.StatusUnauthorized, result)
+		c.Abort()
+		return
+	}
+
+	db, err := sqlx.Open("mysql", config.DBConnectionString)
+	if err != nil {
+		log.Fatalln("failed to open database x: ", err)
+	}
+	defer db.Close()
+
+	rows, err := db.Query(`
+	SELECT
+		api_client.id, api_client.name
+	FROM api_client
+	WHERE api_client.token = ? and name = 'External'
+	`, secretToken)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	hasAccess := false
+	if rows.Next() {
+		hasAccess = true
+	}
+
+	if !hasAccess {
+		response := types.Result{Status: "Warning", StatusCode: http.StatusUnauthorized, Message: "Access Token Not Found"}
+		result := gin.H{
+			"result": response,
+		}
+		c.JSON(http.StatusUnauthorized, result)
+		c.Abort()
+		return
 	}
 }
 

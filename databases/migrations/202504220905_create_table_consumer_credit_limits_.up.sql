@@ -1,0 +1,15 @@
+CREATE TABLE consumer_credit_limits (
+  id VARCHAR(255) PRIMARY KEY NOT NULL,
+  consumer_id VARCHAR(255) NOT NULL,
+  1_month DECIMAL(12,2) UNSIGNED NOT NULL,
+  2_month DECIMAL(12,2) UNSIGNED NOT NULL,
+  3_month DECIMAL(12,2) UNSIGNED NOT NULL,
+  6_month DECIMAL(12,2) UNSIGNED NOT NULL,
+
+  status_id VARCHAR(255) DEFAULT "1",
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_by VARCHAR(255) NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_by VARCHAR(255) NULL,
+  INDEX index_consumer_id (consumer_id)
+);

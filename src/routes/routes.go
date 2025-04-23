@@ -29,6 +29,7 @@ func RegisterRoutes(db *sqlx.DB, config *configs.Config, dataManager *data.Manag
 	}))
 
 	RegisterWebRoutes(db, dataManager, router)
+	RegisterExternalRoutes(db, dataManager, router)
 
 	serverAddress := config.PortApps
 	router.Run(serverAddress)

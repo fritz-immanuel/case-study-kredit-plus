@@ -1,0 +1,6 @@
+CREATE TABLE api_client (
+  id INT NOT NULL AUTO_INCREMENT,
+  name  VARCHAR(255) DEFAULT "",
+  token  VARCHAR(255) DEFAULT "",
+  PRIMARY KEY (id)
+);

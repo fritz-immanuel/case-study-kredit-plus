@@ -81,8 +81,20 @@ func FilterFindAllParam(c *gin.Context) types.FindAllParams {
 		sortBy = "DESC"
 	}
 
-	if c.Query("StatusID") == "" {
-		statusID = c.Query("StatusID")
+	// if c.Query("StatusID") == "" {
+	statusID = c.Query("StatusID")
+	// }
+
+	explodeStatus := strings.Split(statusID, ",")
+	for _, vStatus := range explodeStatus {
+		if vStatus != "-1" && vStatus != "" {
+			JoinStringStatus := strings.Join(explodeStatus, "','")
+			statusID = "status_id IN ('" + JoinStringStatus + "')"
+			break
+		} else {
+			statusID = ""
+			break
+		}
 	}
 
 	if sortName != "" {
@@ -96,6 +108,7 @@ func FilterFindAllParam(c *gin.Context) types.FindAllParams {
 
 	return findallparams
 }
+
 func sanitize(text string) string {
 	return strings.NewReplacer("'", "", `"`, "").Replace(text)
 }
